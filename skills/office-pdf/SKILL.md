@@ -1,7 +1,7 @@
 ---
 name: office-pdf
 display_name: Office PDF
-version: "1.0.0"
+version: "1.0.1"
 description: >-
   Read and generate PDF files. Read: extract text, parse tables, analyze
   structure from existing PDFs. Generate: create PDFs from Markdown, HTML,
@@ -269,8 +269,6 @@ pdftoppm -png -r 150 output.pdf /tmp/preview/page
 ---
 
 ## Bundled Resources
-
-Available at `https://forgeuno.com/skills/office-pdf/`.
 
 ### Scripts
 

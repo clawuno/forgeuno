@@ -1,7 +1,7 @@
 ---
 name: office-pptx
 display_name: Office PPTX
-version: "1.0.0"
+version: "1.0.1"
 description: >-
   Create, edit, and format PowerPoint presentations (.pptx) with consistent
   visual design. Defines 5 slide types, 4 style recipes, theme contract,
@@ -244,8 +244,6 @@ For Chinese/Japanese/Korean content:
 ---
 
 ## Bundled Resources
-
-Available at `https://forgeuno.com/skills/office-pptx/`.
 
 ### References
 

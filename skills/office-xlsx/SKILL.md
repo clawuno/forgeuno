@@ -1,7 +1,7 @@
 ---
 name: office-xlsx
 display_name: Office XLSX
-version: "1.0.0"
+version: "1.0.1"
 description: >-
   Create, edit, and analyze Excel spreadsheets (.xlsx, .csv) with formula integrity
   and format preservation. Uses XML-level editing for existing files to prevent
@@ -266,8 +266,6 @@ Before delivering any .xlsx:
 
 ## Bundled Resources
 
-This skill includes scripts, references, and templates available at `https://forgeuno.com/skills/office-xlsx/`. Download what you need to the workspace before use.
-
 ### Scripts
 
 | Script | Purpose | Usage |
@@ -301,9 +299,9 @@ This skill includes scripts, references, and templates available at `https://for
 
 ### How to Use
 
-1. Download scripts: `curl -O https://forgeuno.com/skills/office-xlsx/scripts/xlsx_unpack.py` (repeat for each needed script)
-2. Download template: `curl -O https://forgeuno.com/skills/office-xlsx/templates/minimal_xlsx/...` (all files)
-3. Load references as needed: `curl -s https://forgeuno.com/skills/office-xlsx/references/edit.md`
+1. Copy scripts to workspace: `cp scripts/xlsx_unpack.py .` (repeat for each needed script)
+2. Copy template to workspace: `cp -r templates/minimal_xlsx/ .`
+3. Load references as needed: `cat references/edit.md`
 
 ---
 

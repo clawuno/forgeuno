@@ -1,7 +1,7 @@
 ---
 name: office-docx
 display_name: Office DOCX
-version: "1.0.0"
+version: "1.0.1"
 description: >-
   Create, edit, and format Word documents (.docx) with production-grade quality.
   Covers three pipelines: create from scratch, edit existing documents preserving
@@ -193,8 +193,6 @@ pdftoppm -png /tmp/preview/input.pdf /tmp/preview/page
 
 ## Bundled Resources
 
-This skill includes scripts, references, assets, and C# source code available at `https://forgeuno.com/skills/office-docx/`. Download what you need to the workspace before use.
-
 ### Scripts
 
 | Script | Purpose |
@@ -243,7 +241,7 @@ Usage: `dotnet run --project scripts/dotnet/MiniMaxAIDocx.Cli -- <command> [args
 1. Set up .NET environment: `bash scripts/setup.sh`
 2. Verify: `bash scripts/env_check.sh`
 3. Create document: `dotnet run --project scripts/dotnet/MiniMaxAIDocx.Cli -- create --output report.docx`
-4. Load references as needed: `curl -s https://forgeuno.com/skills/office-docx/references/scenario_a.md`
+4. Load references as needed: `cat references/scenario_a.md`
 
 ---
 
