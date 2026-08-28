@@ -1,13 +1,12 @@
 ---
 name: office-pptx
 display_name: Office PPTX
-version: "1.0.1"
+version: "2.0.0"
 description: >-
-  Create, edit, and format PowerPoint presentations (.pptx) with consistent
-  visual design. Defines 5 slide types, 4 style recipes, theme contract,
-  and validation pipeline. Uses PptxGenJS for creation and XML editing
-  for preserving existing templates.
-  Keywords: PowerPoint, pptx, slides, presentation, deck, PptxGenJS.
+  Create, edit, inspect, and verify PowerPoint presentations (.pptx) as coherent
+  visual narratives. Uses PptxGenJS for new decks, XML editing to preserve
+  existing templates, and rendered contact-sheet plus full-slide review before
+  delivery. Use for PowerPoint, PPTX, slides, presentations, decks, and pitch decks.
 tags:
   - document
   - office
@@ -15,260 +14,184 @@ tags:
   - presentation
   - slides
 allowed-tools: >-
-  Read Write Edit Bash
+  Read Write Edit Glob Grep Bash
 ---
 
-# Office PPTX — Presentation Design with Visual Consistency
+# Office PPTX
 
-Create presentations that look professionally designed — consistent typography,
-spacing, colors, and visual hierarchy across every slide.
-
----
+Create presentations that make an argument at presentation distance. A deck is
+not a document split into rectangles and not a sequence of interchangeable card
+grids. Content, narrative, and visual direction determine the slide system.
 
 ## Task Routing
 
 | Task | Route | Method |
 |------|-------|--------|
-| Create new presentation from scratch | **CREATE** | PptxGenJS (JavaScript) |
-| Edit existing .pptx | **EDIT** | XML unpack/edit/repack (preserves formatting) |
-| Read/extract content from .pptx | **READ** | markitdown or python-pptx |
+| Create a new presentation | **CREATE** | PptxGenJS with reproducible source |
+| Edit an existing presentation | **EDIT** | Preserve its design system; prefer XML edits for template fidelity |
+| Read or extract content | **READ** | markitdown or python-pptx |
 
----
+For CREATE or a visual redesign, use Clawuno's `company/_system-visual-design`
+guidance when available. User requirements, supplied templates, brand assets,
+and Workspace `DESIGN.md` take priority over defaults in this skill.
 
-## Route: CREATE
+## CREATE Workflow
 
-### Workflow (7 Steps)
+### 1. Establish the communication job
 
-1. **Define theme** — Choose style recipe, color palette, fonts
-2. **Plan slide structure** — Assign slide types to content sections
-3. **Set slide size** — Default 16:9 (`LAYOUT_WIDE`). Match source material if recreating
-4. **Build slides** — Per-slide JS modules using PptxGenJS
-5. **Render preview** — Convert to PDF/PNG via LibreOffice
-6. **Validate** — Check overflow, font substitution, visual consistency
-7. **Deliver** — Output .pptx + source .js for reproducibility
+Identify the audience, setting, decision or change in understanding, time
+available, source material, required format, language, and delivery constraints.
+Infer reversible choices; ask only when a missing constraint would materially
+change the deck.
 
-### 5 Slide Types
+### 2. Build a narrative spine
 
-Every slide must be one of these types:
+Outline the argument before slide layouts. Give each slide one communicative job
+and a working assertion title where the evidence supports a conclusion. Sequence
+slides so each creates the need for the next. Use agenda, section, appendix, and
+summary slides only when they help this audience.
 
-| Type | Purpose | Layout |
-|------|---------|--------|
-| **Cover** | Title slide, first impression | Full-bleed background, large title, subtitle, date/author |
-| **TOC** | Table of contents, navigation | Numbered section list, optional icons |
-| **Section Divider** | Chapter/topic transition | Large section number + title, accent background |
-| **Content** | Main information delivery | Title + body area (text, images, charts, tables) |
-| **Summary** | Conclusion, key takeaways | Bullet points or numbered recap, CTA |
+Read [slide roles and layout families](references/slide-types.md) when planning
+the sequence. The roles are a vocabulary, not a fixed template or mandatory list.
 
-### 4 Style Recipes
+### 3. Define a specific visual direction
 
-Each recipe defines a complete visual system:
+Write one internal direction sentence that guides hierarchy, density, type,
+color roles, imagery, chart treatment, and recurring motifs. Avoid generic
+phrases such as "modern, clean, professional" and avoid choosing a style from a
+fixed palette menu without relating it to the content.
 
-| Recipe | Border Radius | Shadow | Spacing | Personality |
-|--------|--------------|--------|---------|-------------|
-| **Sharp** | 0px | Hard, offset | Tight | Corporate, formal, editorial |
-| **Soft** | 4-8px | Soft, blurred | Balanced | Professional, modern, clean |
-| **Rounded** | 12-16px | Medium | Generous | Friendly, approachable, startup |
-| **Pill** | Full radius | Subtle | Spacious | Playful, creative, consumer |
+Read [design-system guidance](references/design-system.md) for visual grammar,
+typography, color, imagery, CJK, and consistency rules.
 
-### Theme Object Contract
+### 4. Plan visual rhythm
 
-Every presentation must define a theme object with these 5 keys:
+Create a slide plan containing: slide job, key message, evidence, visual form,
+and layout family. Establish recurring anchors, then vary composition with the
+story. Alternate evidence-dense moments with spacious synthesis or transition
+moments. Do not repeat the same layout mechanically.
 
-```javascript
-const theme = {
-  colors: {
-    primary: '#1B365D',     // Main brand color
-    secondary: '#4A90D9',   // Accent, highlights
-    background: '#FFFFFF',  // Slide background
-    text: '#333333',        // Body text
-    muted: '#999999',       // Captions, metadata
-  },
-  fonts: {
-    heading: 'Montserrat',  // Bold, display
-    body: 'Open Sans',      // Regular, readable
-    code: 'Fira Code',      // Monospace (if needed)
-  },
-  recipe: 'Soft',           // Sharp | Soft | Rounded | Pill
-  slideSize: 'LAYOUT_WIDE', // 16:9
-  pageNumberBadge: true,     // Show page numbers on all non-cover slides
-}
-```
+### 5. Author reproducibly
 
-### Color Palette Reference
+- Default to 16:9 (`LAYOUT_WIDE`) unless the source or user requires otherwise.
+- Build with PptxGenJS and retain the source `.js` beside the `.pptx`.
+- Centralize theme tokens, geometry, typography roles, and reusable helpers.
+- Use `autoFontSize` or `calcTextBox`; do not trust built-in `fit`/`autoFit` for
+  content whose rendered size matters.
+- Use `imageSizingCrop` or `imageSizingContain`; never stretch an image.
+- Prefer editable native charts for common chart types. Use SVG/PNG only when
+  the required visual cannot be expressed reliably as an editable chart.
+- Use bullet options rather than literal bullet characters.
+- Render equations to SVG. Use a consistent monospace treatment for code.
 
-| Use Case | Palette | Colors |
-|----------|---------|--------|
-| Corporate | Navy + Gold | `#1B365D` `#D4AF37` `#F5F5F5` |
-| Technology | Blue + Cyan | `#0066FF` `#00D4FF` `#F0F8FF` |
-| Creative | Coral + Purple | `#FF6B6B` `#9B59B6` `#FFF5F5` |
-| Nature | Green + Brown | `#228B22` `#8B4513` `#F0FFF0` |
-| Minimal | Gray + Black | `#333333` `#666666` `#FAFAFA` |
-| Bold | Red + Black | `#E74C3C` `#2C3E50` `#FFFFFF` |
+Read [PptxGenJS reference](references/pptxgenjs.md) before implementation and
+[pitfalls](references/pitfalls.md) before final generation.
 
----
+### 6. Render and review
 
-## Route: EDIT (Existing Templates)
+Render the complete deck to PDF and slide images. Review in two passes:
 
-**Same principle as XLSX: unpack → edit XML → repack.**
+1. **Contact sheet**: narrative flow, rhythm, repeated layouts, palette, density,
+   and whether the deck feels like one designed system.
+2. **Full-size slides**: typography, wrapping, crop, alignment, chart labels,
+   source notes, glyphs, and visual artifacts.
 
-```bash
-# 1. Unpack
-mkdir /tmp/pptx_work && cd /tmp/pptx_work
-unzip -o input.pptx -d unpacked/
+Extract text as a separate content check. Visual review and text extraction are
+complementary; neither replaces the other. Fix material issues and re-render the
+affected slides. See [visual review](references/visual-review.md).
 
-# 2. Edit slide XML (e.g., ppt/slides/slide1.xml)
-# Find and replace placeholder text, update values, modify elements
+### 7. Validate and deliver
 
-# 3. Repack
-cd unpacked && zip -r ../output.pptx . -x ".*"
-```
-
-**Why XML editing for existing files?** PptxGenJS creates new files — it can't preserve an existing template's master slides, layouts, animations, and embedded media. XML editing preserves everything.
-
-### Common Edit Operations
-
-- **Replace placeholder text**: Find `<a:t>PLACEHOLDER</a:t>` → replace inner text
-- **Update chart data**: Edit `ppt/charts/chart1.xml` data references
-- **Change image**: Replace file in `ppt/media/`, keep same filename
-- **Add slide**: Copy an existing slide XML, add to `[Content_Types].xml` and relationships
-
----
-
-## Route: READ
-
-```bash
-# markitdown (text extraction)
-markitdown presentation.pptx
-
-# python-pptx (structured access)
-python3 -c "
-from pptx import Presentation
-prs = Presentation('file.pptx')
-for i, slide in enumerate(prs.slides):
-    print(f'--- Slide {i+1} ---')
-    for shape in slide.shapes:
-        if shape.has_text_frame:
-            print(shape.text)
-"
-```
-
----
-
-## PptxGenJS Authoring Rules
-
-### Text Sizing
-
-- Use `autoFontSize` or `calcTextBox` helpers for text boxes — do not use PptxGenJS built-in `fit` or `autoFit` (unreliable)
-- Minimum readable font: 14pt for body, 24pt for titles, 10pt for footnotes
-
-### Images
-
-- Use `imageSizingCrop` or `imageSizingContain` — not PptxGenJS built-in image sizing
-- Convert SVG/EMF/HEIC to PNG before embedding (broad compatibility)
-- Maintain aspect ratio; never stretch
-
-### Lists
-
-- Use PptxGenJS bullet options, not literal `•` characters
-- Consistent indent level: 0.5 inch per level
-
-### Charts
-
-- Prefer native PowerPoint charts for bar/line/pie (editable by recipients)
-- For complex charts PptxGenJS can't express, render as SVG/PNG and embed as image
-
-### Equations and Code
-
-- Equations: Render LaTeX → SVG → embed as image
-- Code blocks: Use monospace font with syntax highlighting colors
-
-### Validation
-
-Include these checks in the source .js:
+Source must run overlap and bounds checks:
 
 ```javascript
 warnIfSlideHasOverlaps(slide, pptx)
 warnIfSlideElementsOutOfBounds(slide, pptx)
 ```
 
-Fix all unintentional overlaps and out-of-bounds before delivering.
+Resolve all unintentional overlaps and out-of-bounds elements. Deliver the
+`.pptx`, reproducible source, and any required assets. Do not deliver temporary
+preview images unless the user asks for them.
 
----
+## EDIT Route
 
-## Validation Pipeline
+Inspect the existing deck before changing it. Treat its masters, layouts,
+geometry, typography, recurring elements, imagery, and chart language as a
+design system. Preserve it unless the user requests a redesign.
 
-### Automated Checks
+For template-preserving edits, use unpack -> edit XML -> repack:
 
 ```bash
-# Render slides to PNG
-soffice --headless --convert-to pdf input.pptx
-pdftoppm -png input.pdf /tmp/slides/page
-
-# Check for overflow (if using PptxGenJS test script)
-node slides_test.js input.pptx
-
-# Detect font substitution
-# Compare intended fonts with what LibreOffice actually renders
+mkdir /tmp/pptx_work && cd /tmp/pptx_work
+unzip -o input.pptx -d unpacked/
+# Edit the smallest necessary XML or media files.
+cd unpacked && zip -r ../output.pptx . -x ".*"
 ```
 
-### Visual Checklist
+Use XML editing when PptxGenJS would discard masters, layouts, animations,
+relationships, embedded media, or template-specific behavior. Read
+[editing existing presentations](references/editing.md) before changing package
+internals. Render and compare the edited deck before delivery.
 
-- [ ] All slides use consistent fonts (no system fallbacks)
-- [ ] Colors match the theme palette (no stray colors)
-- [ ] Text doesn't overflow text boxes
-- [ ] Images are sharp and properly sized
-- [ ] Page numbers appear on all non-cover slides
-- [ ] Slide transitions are consistent (or none)
-- [ ] Master slide/layout is applied correctly
-- [ ] Spacing between elements is consistent across slides
+## READ Route
 
-### CJK Fonts
+```bash
+# Text extraction
+python -m markitdown presentation.pptx
 
-For Chinese/Japanese/Korean content:
-- Use Microsoft YaHei (Chinese), Meiryo (Japanese), Malgun Gothic (Korean)
-- Verify fonts render correctly in LibreOffice preview
+# Structured inspection
+python3 - <<'PY'
+from pptx import Presentation
+prs = Presentation('presentation.pptx')
+for i, slide in enumerate(prs.slides, start=1):
+    print(f'--- Slide {i} ---')
+    for shape in slide.shapes:
+        if getattr(shape, 'has_text_frame', False):
+            print(shape.text)
+PY
+```
 
----
+Reading text does not establish visual quality. Render when layout, charts,
+images, typography, or template fidelity matters.
 
-## Common Pitfalls
+## Non-Negotiable Quality Rules
 
-| Pitfall | Solution |
-|---------|----------|
-| Fonts render differently on recipient's machine | Use widely available fonts or embed; test with LibreOffice |
-| Text overflows box | Use `autoFontSize` helper or reduce text; never hide overflow |
-| Slides look inconsistent | Enforce theme object contract — every slide uses same colors/fonts/recipe |
-| Edit destroys template animations | Use XML editing, not PptxGenJS for existing files |
-| Chart not editable | Use native PowerPoint chart types, not embedded images |
-| Large file size | Compress images before embedding; remove unused master slides |
+- One primary message or communicative job per slide.
+- Hierarchy must be visible at a glance and at presentation distance.
+- Paragraphs and long lists are left-aligned; projection copy is edited down.
+- Data charts use honest scales, units, sources, and a visual emphasis that serves
+  the question rather than decoration.
+- Images preserve aspect ratio, have adequate resolution, and use coherent crops.
+- CJK and mixed-language text is checked in the rendered output for glyph support,
+  line breaks, visual weight, punctuation, and font substitution.
+- Placeholder content, hidden overflow, accidental collisions, and fake citations
+  are release-blocking defects.
+- Do not claim visual validation without reviewing rendered output.
 
----
+## References
 
-## Bundled Resources
-
-### References
-
-| Reference | Content |
-|-----------|---------|
-| `references/slide_types.md` | Detailed specs for 5 slide types (Cover, TOC, Section, Content, Summary) with layout rules |
-| `references/design_system.md` | Color palettes, font reference, style recipe parameters, spacing rules |
-| `references/editing.md` | XML-level editing guide for existing .pptx templates |
-| `references/pitfalls.md` | Common issues and QA process |
-| `references/pptxgenjs_api.md` | PptxGenJS API quick reference and helper usage |
-
----
+| Reference | Read when |
+|-----------|-----------|
+| [Slide roles and layout families](references/slide-types.md) | Planning narrative, slide jobs, and layout rhythm |
+| [Design system](references/design-system.md) | Choosing type, color, imagery, geometry, and CJK behavior |
+| [PptxGenJS](references/pptxgenjs.md) | Creating a deck programmatically |
+| [Editing](references/editing.md) | Preserving an existing template or package structure |
+| [Pitfalls](references/pitfalls.md) | Implementing and debugging PptxGenJS or OOXML |
+| [Visual review](references/visual-review.md) | Rendering, contact-sheet review, and release checks |
 
 ## Dependencies
 
-- **Creation**: Node.js + `pptxgenjs` (JavaScript)
-- **Editing**: `unzip`, `zip` (for XML-level editing)
-- **Reading**: Python `python-pptx` or `markitdown`
-- **Preview**: LibreOffice (`soffice`) + Poppler (`pdftoppm`)
-- **Helpers** (optional): `sharp` for image processing, `react-icons` for icon SVGs
-
----
+- Creation: Node.js + `pptxgenjs`
+- Editing: `unzip`, `zip`
+- Reading: `python-pptx` or `markitdown`
+- Preview: LibreOffice (`soffice`) + Poppler (`pdftoppm`)
+- Optional image processing: `sharp`
 
 ## Attribution
 
-This skill incorporates knowledge from:
-- [MiniMax Office Skills](https://github.com/MiniMax-AI/skills) (MIT) — Theme contract, 5 slide types, style recipes, color palette system, XML editing workflow
-- [OpenAI Skills](https://github.com/openai/skills) (Apache-2.0) — PptxGenJS helper utilities (autoFontSize, calcTextBox, overflow/bounds detection), validation scripts
+This Forgeuno skill is an original synthesis informed by:
+
+- MiniMax Office Skills (MIT): theme and OOXML editing workflows
+- OpenAI Skills (Apache-2.0): PptxGenJS helpers and render-and-verify discipline
+- OpenDesign (Apache-2.0): separation of design direction, design systems, craft,
+  artifact skills, and multi-lens visual critique
